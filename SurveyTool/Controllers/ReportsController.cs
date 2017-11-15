@@ -1,4 +1,5 @@
-﻿using SurveyTool.Models;
+﻿using SurveyTool.DAC;
+using SurveyTool.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,23 +23,7 @@ namespace SurveyTool.Controllers
         {
             Survey survey =db.Surveys.Find(id);
 
-            List<ReportViewModel> reports = new List<ReportViewModel>();
-
-            ReportViewModel report = new ReportViewModel();
-            report.QuestionOptionId = 74;
-            report.Score = 2;
-            report.Responses = 3;
-            report.ScorePercentage = 30;
-
-            reports.Add(report);
-
-            ReportViewModel report2 = new ReportViewModel();
-            report2.QuestionOptionId = 75;
-            report2.Score = 2;
-            report2.Responses = 3;
-            report2.ScorePercentage = 30;
-
-            reports.Add(report2);
+            List<ReportViewModel> reports = new ReportDataHelper().Show(survey.SurveyId);
 
             ViewBag.Reports = reports;
 
