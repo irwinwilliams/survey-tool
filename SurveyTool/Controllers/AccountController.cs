@@ -33,6 +33,7 @@ namespace SurveyTool.Controllers
 
         public ApplicationSignInManager SignInManager
         {
+
             get
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();

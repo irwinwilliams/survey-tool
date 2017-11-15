@@ -36,6 +36,7 @@ namespace SurveyTool.Models
 
         [DataType(DataType.MultilineText)]
         [StringLength(200)]
+        [DisplayFormat(ConvertEmptyStringToNull = true, NullDisplayText = "No Remarks")]
         public string Remarks { get; set; }
 
         [DisplayName("Last Modified on")]

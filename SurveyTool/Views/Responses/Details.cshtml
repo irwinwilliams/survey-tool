@@ -50,14 +50,19 @@
                 Question:
             </dt>
             <dd>
-                @item.Question.Title
-                
+                @Html.DisplayFor(m=> item.Question.Title)
             </dd>
             <dt>
                 Answer:
             </dt>
             <dd>
-                @item.QuestionOption.Name
+                @Html.DisplayFor(m=> item.QuestionOption.Name)
+            </dd>
+            <dt>
+                Remarks:
+            </dt>
+            <dd>
+                @Html.DisplayFor(m=> item.Remarks)
             </dd>
         </dl>
     }

@@ -49,15 +49,30 @@ else
 {
     <h2>Take a survey</h2>
 
-    <ul>
+    <table class="table">
+        <tr>
+            <th>
+                Survey Name
+            </th>
+            <th>
+
+            </th>
+        </tr>
         @foreach (var survey in Model)
         {
-            <li>
-                <a href="@Url.Action("Create","Responses",new {id= survey.SurveyId })">@survey.Name</a>
-            </li>
-        }
-    </ul>
+            <tr>
+                <td>
+                    <a href="@Url.Action("Create","Responses",new {id= survey.SurveyId })">@survey.Name</a>
+                </td>
 
+                <td>
+                    @Html.ActionLink("Take Survey", "Create", "Responses", new { id = survey.SurveyId }, htmlAttributes: null)
+                </td>
+            </tr>
+        }
+    </table>
+
+    
 
 }
 

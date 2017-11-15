@@ -18,6 +18,7 @@ namespace SurveyTool.Controllers
         // GET: Responses
         public ActionResult Create(int id)
         {
+
             Response response = new Response();
             response.Survey= db.Surveys.Find(id);
             response.SurveyId = response.Survey.SurveyId;
@@ -54,18 +55,35 @@ namespace SurveyTool.Controllers
             return RedirectToAction("Index", "Dashboard");
         }
 
-        public ActionResult Index() {
+        public ActionResult Index(string id) {
 
             List<Response> responses = new List<Response>();
 
-            if (isAdminUser())
+            if (!string.IsNullOrWhiteSpace(id))
             {
-                responses=db.Responses.ToList();
+                if (isAdminUser())
+                {
+                    responses = db.Responses.Where(w => 
+                                        w.CreatedBy.Equals(db.Users
+                                                            .Where(u => u.Id.Equals(id))
+                                                            .Select(s => s.UserName)
+                                                            .FirstOrDefault())
+                                                            ).ToList();
+                }
             }
             else
             {
-                responses = db.Responses.Where(w=> w.CreatedBy.Equals(User.Identity.Name)).ToList();
+                if (isAdminUser())
+                {
+                    responses = db.Responses.ToList();
+                }
+                else
+                {
+                    responses = db.Responses.Where(w => w.CreatedBy.Equals(User.Identity.Name)).ToList();
+                }
             }
+
+            
 
             return View(responses);
         }

@@ -44,5 +44,7 @@ namespace SurveyTool.Models
         {
             base.OnModelCreating(modelBuilder);
         }
+
+        public System.Data.Entity.DbSet<SurveyTool.Models.Client> Clients { get; set; }
     }
 }

@@ -3,11 +3,11 @@
     <ul class="nav">
         <li><a href="@Url.Action("Index", "Dashboard")">Home</a></li>
         <li><a href="@Url.Action("Index", "Responses")">Responses</a></li>
-        @*@if (User.IsInRole("Admin"))
+
+        @if (User.IsInRole("Admin"))
         {
             <li><a href="@Url.Action("Index", "Reports")">Reports</a></li>
-            <li><a href="@Url.Action("Index", "Surveys")">Admin</a></li>
-        }*@
+        }
 
     </ul>
 }

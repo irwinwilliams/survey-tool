@@ -1,0 +1,127 @@
+﻿@model SurveyTool.Models.Survey
+
+@{
+    ViewBag.Title = "Surveys";
+}
+
+<h2>Report</h2>
+
+<div>
+    <h4>Survey</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsEnabled)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsEnabled)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ModifiedDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ModifiedDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EntryDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EntryDate)
+        </dd>
+
+    </dl>
+</div>
+
+<div>
+    @foreach (var category in Model.Categories)
+    {
+        <fieldset>
+            <legend>@category.Name</legend>
+
+            @foreach (var question in category.Questions)
+            {
+
+                <h5>@question.Title</h5>
+
+                <table class="table">
+                    <tr>
+                        <th>
+                            Options
+                        </th>
+                        <th>
+                            Responses
+                        </th>
+                        <th>
+                            Score
+                        </th>
+                        <th>
+                            Progress Bar
+                        </th>
+                    </tr>
+                    @foreach (var questionOption in question.QuestionOptions)
+                    {
+                        <tr>
+                            <td>
+                                @questionOption.Name
+                            </td>
+                            <td>
+                                @foreach (var item in ViewBag.Reports)
+                                {
+                                    if (item.QuestionOptionId == questionOption.QuestionOptionId)
+                                    {
+                                        @item.Responses
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @foreach (var item in ViewBag.Reports)
+                        {
+                            if (item.QuestionOptionId == questionOption.QuestionOptionId)
+                            {
+                                        @item.Score
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @foreach (var item in ViewBag.Reports)
+                        {
+                            if (item.QuestionOptionId == questionOption.QuestionOptionId)
+                            {
+                                        <div class="progress">
+                                            <div class="bar" role="progressbar"
+                                                 style="width:@item.ScorePercentage%">
+                                                @item.ScorePercentage
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+
+
+            }
+        </fieldset>
+    }
+
+
+</div>
+
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>
