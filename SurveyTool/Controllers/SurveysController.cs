@@ -1,102 +1,137 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using SurveyTool.Models;
 
 namespace SurveyTool.Controllers
 {
-    [Authorize]
     public class SurveysController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private ApplicationDbContext db = new ApplicationDbContext();
 
-        public SurveysController(ApplicationDbContext db)
+        // GET: Surveys
+        public async Task<ActionResult> Index()
         {
-            _db = db;
+            return View(await db.Surveys.ToListAsync());
         }
 
-        [HttpGet]
-        public ActionResult Index()
+        // GET: Surveys/Details/5
+        public async Task<ActionResult> Details(int? id)
         {
-            var surveys = _db.Surveys.ToList();
-            return View(surveys);
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Survey survey = await db.Surveys.FindAsync(id);
+            if (survey == null)
+            {
+                return HttpNotFound();
+            }
+            return View(survey);
         }
 
-        [HttpGet]
+        // GET: Surveys/Create
         public ActionResult Create()
         {
-            var survey = new Survey
-                {
-                    StartDate = DateTime.Now,
-                    EndDate = DateTime.Now.AddYears(1)
-                };
+            Survey model = new Survey();
 
-            return View(survey);
+            return View(model);
         }
 
+        // POST: Surveys/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateInput(false)]
-        public ActionResult Create(Survey survey, string action)
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create([Bind(Include = "SurveyId,Name,IsEnabled")] Survey survey)
         {
+            TryUpdateModel(survey);
+            survey.ModifiedDate = DateTime.Now;
+            survey.EntryDate = DateTime.Now;
+
             if (ModelState.IsValid)
             {
-                survey.Questions.ForEach(q => q.CreatedOn = q.ModifiedOn = DateTime.Now);
-                _db.Surveys.Add(survey);
-                _db.SaveChanges();
-                TempData["success"] = "The survey was successfully created!";
-                return RedirectToAction("Edit", new {id = survey.Id});
+                db.Surveys.Add(survey);
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
             }
-            else
-            {
-                TempData["error"] = "An error occurred while attempting to create this survey.";
-                return View(survey);
-            }
-        }
 
-        [HttpGet]
-        public ActionResult Edit(int id)
-        {
-            var survey = _db.Surveys.Include("Questions").Single(x => x.Id == id);
-            survey.Questions = survey.Questions.OrderBy(q => q.Priority).ToList();
             return View(survey);
         }
 
-        [HttpPost]
-        [ValidateInput(false)]
-        public ActionResult Edit(Survey model)
+        // GET: Surveys/Edit/5
+        public async Task<ActionResult> Edit(int? id)
         {
-            foreach (var question in model.Questions)
+            if (id == null)
             {
-                question.SurveyId = model.Id;
-
-                if (question.Id == 0)
-                {
-                    question.CreatedOn = DateTime.Now;
-                    question.ModifiedOn = DateTime.Now;
-                    _db.Entry(question).State = EntityState.Added;
-                }
-                else
-                {
-                    question.ModifiedOn = DateTime.Now;
-                    _db.Entry(question).State = EntityState.Modified;
-                    _db.Entry(question).Property(x => x.CreatedOn).IsModified = false;
-                }
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            _db.Entry(model).State = EntityState.Modified;
-            _db.SaveChanges();
-            return RedirectToAction("Edit", new {id = model.Id});
+            Survey survey = await db.Surveys.FindAsync(id);
+            if (survey == null)
+            {
+                return HttpNotFound();
+            }
+            return View(survey);
         }
 
+        // POST: Surveys/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        public ActionResult Delete(Survey survey)
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit([Bind(Include = "SurveyId,Name,IsEnabled")] Survey survey)
         {
-            _db.Entry(survey).State = EntityState.Deleted;
-            _db.SaveChanges();
+            TryUpdateModel(survey);
+            survey.ModifiedDate = DateTime.Now;
+
+            if (ModelState.IsValid)
+            {
+                db.Entry(survey).State = EntityState.Modified;
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            return View(survey);
+        }
+
+        // GET: Surveys/Delete/5
+        public async Task<ActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Survey survey = await db.Surveys.FindAsync(id);
+            if (survey == null)
+            {
+                return HttpNotFound();
+            }
+            return View(survey);
+        }
+
+        // POST: Surveys/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeleteConfirmed(int id)
+        {
+            Survey survey = await db.Surveys.FindAsync(id);
+            db.Surveys.Remove(survey);
+            await db.SaveChangesAsync();
             return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

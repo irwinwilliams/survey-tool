@@ -1,44 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Web;
 
 namespace SurveyTool.Models
 {
     public class Response
     {
+        public Response() {
+
+            Answers = new List<Answer>();
+            ResponseId = -1;
+            SurveyId = -1;
+            CreatedBy = "Unknown";
+            EntryDate = DateTime.Now;
+        }
+
         [Key]
-        public int Id { get; set; }
+        [Column("ResponseId")]
+        public int ResponseId { get; set; }
 
         public int SurveyId { get; set; }
 
-        public Survey Survey { get; set; }
+        [ForeignKey("SurveyId")]
+        public virtual Survey Survey { get; set; }
 
         public string CreatedBy { get; set; }
 
-        public DateTime CreatedOn { get; set; }
+        public DateTime EntryDate { get; set; }
 
         public ICollection<Answer> Answers { get; set; }
 
-        public int GetQuestionCount()
-        {
-            return Answers == null ? 0 : Answers.Count();
-        }
 
-        public int GetAnswerCount()
-        {
-            return Answers == null ? 0 : Answers.Sum(x => x.Score);
-        }
-
-        public double CalculateScore()
-        {
-            var questions = GetQuestionCount();
-            var answers = GetAnswerCount();
-
-            if (questions == 0 || answers == 0)
-                return 0.0;
-
-            return (double)answers / (double)questions;
-        }
     }
 }

@@ -21,7 +21,11 @@ namespace SurveyTool.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Survey> Surveys { get; set; }
+
+        public DbSet<Category> Categories { get; set; }
         public DbSet<Question> Questions { get; set; }
+        public DbSet<QuestionOption> QuestionOptions { get; set; }
+
         public DbSet<Response> Responses { get; set; }
         public DbSet<Answer> Answers { get; set; }
 
@@ -38,12 +42,6 @@ namespace SurveyTool.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Answer>()
-                        .HasRequired(x => x.Question)
-                        .WithMany()
-                        .HasForeignKey(x => x.QuestionId)
-                        .WillCascadeOnDelete(false);
-
             base.OnModelCreating(modelBuilder);
         }
     }

@@ -7,6 +7,19 @@ namespace SurveyTool.Migrations
     {
         public override void Up()
         {
+
+            CreateTable(
+             "dbo.Cate",
+             c => new
+             {
+                 Id = c.Int(nullable: false, identity: true),
+                 Value = c.String(),
+                 Comment = c.String(),
+             })
+             .PrimaryKey(t => t.Id);
+
+
+
             CreateTable(
                 "dbo.Answers",
                 c => new

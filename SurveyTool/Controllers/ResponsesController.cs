@@ -1,101 +1,151 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using SurveyTool.Models;
+using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using SurveyTool.Models;
 
 namespace SurveyTool.Controllers
 {
     [Authorize]
     public class ResponsesController : Controller
     {
-        private readonly ApplicationDbContext _db;
-
-        public ResponsesController(ApplicationDbContext db)
+        private ApplicationDbContext db = new ApplicationDbContext();
+        // GET: Responses
+        public ActionResult Create(int id)
         {
-            _db = db;
+            Response response = new Response();
+            response.Survey= db.Surveys.Find(id);
+            response.SurveyId = response.Survey.SurveyId;
+
+            return View(response);
         }
 
-        [HttpGet]
-        public ActionResult Index(int surveyId)
+        [HttpPost]
+        public ActionResult Create(FormCollection collection)
         {
-            var responses = _db.Responses
-                               .Include("Survey")
-                               .Include("Answers")
-                               .Include("Answers.Question")
-                               .Where(x => x.SurveyId == surveyId)
-                               .Where(x => x.CreatedBy == User.Identity.Name)
-                               .OrderByDescending(x => x.CreatedOn)
-                               .ThenByDescending(x => x.Id)
-                               .ToList();
+
+            string questions = collection["question.QuestionId"];
+            var QuestionIds= questions.Split(',');
+            Guid guid = Guid.NewGuid();
+
+            Response response = new Response();
+            response.SurveyId= Int32.Parse(collection["SurveyId"]);
+            response.CreatedBy = User.Identity.Name;
+            db.Responses.Add(response);
+            db.SaveChanges();
+
+            foreach (var questionId in QuestionIds)
+            {
+                Answer answer = new Answer();
+                answer.ResponseId = response.ResponseId;
+                answer.QuestionId = Int32.Parse(questionId);
+                answer.QuestionOptionId= Int32.Parse(collection[string.Format("questionOption[{0}]", questionId)]);
+                answer.Remarks = collection[string.Format("Remarks[{0}]", questionId)];
+                
+                db.Answers.Add(answer);
+                db.SaveChanges();
+            }
+
+            return RedirectToAction("Index", "Dashboard");
+        }
+
+        public ActionResult Index() {
+
+            List<Response> responses = new List<Response>();
+
+            if (isAdminUser())
+            {
+                responses=db.Responses.ToList();
+            }
+            else
+            {
+                responses = db.Responses.Where(w=> w.CreatedBy.Equals(User.Identity.Name)).ToList();
+            }
 
             return View(responses);
         }
 
-        [HttpGet]
-        public ActionResult Details(int surveyId, int id)
-        {
-            var response = _db.Responses
-                              .Include("Survey")
-                              .Include("Answers")
-                              .Include("Answers.Question")
-                              .Where(x => x.SurveyId == surveyId)
-                              .Where(x => x.CreatedBy == User.Identity.Name)
-                              .Single(x => x.Id == id);
+        public ActionResult Details(int? id) {
 
-            response.Answers = response.Answers.OrderBy(x => x.Question.Priority).ToList();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Response response = db.Responses
+                                        .Include("Survey")
+                                        .Include("Survey.Categories")
+                                        .Include("Answers")
+                                        .Where(w => w.ResponseId.Equals(id.Value))
+                                        .SingleOrDefault();
+
+            if (response == null)
+            {
+                return HttpNotFound();
+            }
+                
             return View(response);
         }
 
-        [HttpGet]
-        public ActionResult Create(int surveyId)
+        // GET: Responses/Delete/5
+        public async Task<ActionResult> Delete(int? id)
         {
-            var survey = _db.Surveys
-                            .Where(s => s.Id == surveyId)
-                            .Select(s => new
-                                {
-                                    Survey = s,
-                                    Questions = s.Questions
-                                                 .Where(q => q.IsActive)
-                                                 .OrderBy(q => q.Priority)
-                                })
-                             .AsEnumerable()
-                             .Select(x =>
-                                 {
-                                     x.Survey.Questions = x.Questions.ToList();
-                                     return x.Survey;
-                                 })
-                             .Single();
-
-            return View(survey);
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Response response = await db.Responses.FindAsync(id);
+            if (response == null)
+            {
+                return HttpNotFound();
+            }
+            return View(response);
         }
 
-        [HttpPost]
-        public ActionResult Create(int surveyId, string action, Response model)
+        // POST: Responses/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            model.Answers = model.Answers.Where(a => !String.IsNullOrEmpty(a.Value)).ToList();
-            model.SurveyId = surveyId;
-            model.CreatedBy = User.Identity.Name;
-            model.CreatedOn = DateTime.Now;
-            _db.Responses.Add(model);
-            _db.SaveChanges();
-
-            TempData["success"] = "Your response was successfully saved!";
-
-            return action == "Next"
-                       ? RedirectToAction("Create", new {surveyId})
-                       : RedirectToAction("Index", "Home");
+            Response response = await db.Responses.FindAsync(id);
+            db.Responses.Remove(response);
+            await db.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public ActionResult Delete(int surveyId, int id, string returnTo)
+        protected override void Dispose(bool disposing)
         {
-            var response = new Response() { Id = id, SurveyId = surveyId };
-            _db.Entry(response).State = EntityState.Deleted;
-            _db.SaveChanges();
-            return Redirect(returnTo ?? Url.RouteUrl("Root"));
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
+
+        public Boolean isAdminUser()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = User.Identity;
+                ApplicationDbContext context = new ApplicationDbContext();
+                var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
+                var s = UserManager.GetRoles(user.GetUserId());
+                if (s[0].ToString() == "Admin")
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+
     }
 }

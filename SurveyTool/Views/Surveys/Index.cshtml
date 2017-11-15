@@ -1,68 +1,52 @@
 ﻿@model IEnumerable<SurveyTool.Models.Survey>
 
 @{
-    ViewBag.Title = "Surveys";
+    ViewBag.Title = "Index";
 }
 
-@section scripts
-{
-    @Scripts.Render("~/bundles/models")
+<h2>Surveys</h2>
 
-    <script type="text/javascript">
-        $(function() {
-            ko.applyBindings(new SurveyListModel(), $('#survey-list')[0]);
-        })
-    </script>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsEnabled)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ModifiedDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EntryDate)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsEnabled)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ModifiedDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EntryDate)
+        </td>
+        <td>
+            @Html.ActionLink("Create Category", "Create", "Categories", new { id = item.SurveyId }, null) |
+            @Html.ActionLink("Edit", "Edit", new { id=item.SurveyId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.SurveyId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.SurveyId })
+        </td>
+    </tr>
 }
 
-<div class="page-header">
-    <a class="btn btn-success pull-right" href="@Url.Action("Create")">
-        <i class="icon-plus"></i> New Survey
-    </a>
-    <h2>Surveys <small>Add or manage surveys</small></h2>
-</div>
-
-<table id="survey-list" class="table table-striped">
-    <thead>
-        <tr>
-            <th class="span1">ID</th>
-            <th class="span8">Name</th>
-            <th class="span2">Status</th>
-            <th class="span1">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.Name</td>
-                <td>@Html.DisplayFor(x => item.IsActive, "IsActive")</td>
-                <td>
-                    <div class="btn-group">
-                        <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
-                            <i class="icon-wrench"></i><span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu pull-right">
-                            <li>
-                                <a href="@Url.Action("Edit", new {id = item.Id})">
-                                    <i class="icon-pencil"></i> Edit
-                                </a>
-                            </li>
-                            <li>
-                                <a href="@Url.Action("Delete", new {id = item.Id})" data-bind="click: destroy">
-                                    <i class="icon-trash"></i> Delete
-                                </a>
-                            </li>
-                            <li>
-                                <a href="@Url.Action("Index", "Responses", new { surveyId = item.Id })">
-                                    <i class="icon-list"></i> Responses
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </td>
-            </tr> 
-        }
-    </tbody>
 </table>

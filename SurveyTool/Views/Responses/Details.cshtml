@@ -1,59 +1,69 @@
 ﻿@model SurveyTool.Models.Response
 
 @{
-    ViewBag.Title = Model.Survey.Name;
+    ViewBag.Title = "Details";
 }
 
-<div class="page-header">
-    <h3>@ViewBag.Title</h3>
+<h2>Details of Survey @Html.DisplayFor(model => model.Survey.Name)</h2>
+
+<div>
+    <h4>Response</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Survey.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Survey.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedBy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedBy)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EntryDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EntryDate)
+        </dd>
+
+    </dl>
 </div>
 
-<div class="well well-small">
-    <h4>Response Information</h4>
-</div>
-<ul class="unstyled bordered skip-first">
-    <li class="row">
-        <div class="span9">
-            <label><b>User</b></label>
-            <p class="help-block">
-                The user that completed this survey.
-            </p>
-        </div>
-        <div class="span3">
-            <div class="well well-small">
-                @Model.CreatedBy
-            </div>
-        </div>
-    </li>
-    <li class="row">
-        <div class="span9">
-            <label><b>Survey Date</b></label>
-            <p class="help-block">
-                The date on which the audit occurred.
-            </p>
-        </div>
-        <div class="span3">
-            <div class="well well-small">
-                @Model.CreatedOn.ToString("d")
-            </div>
-        </div>
-    </li>
-</ul>
-
-<div class="well well-small">
-    <h4>Questions</h4>
-</div>
-<ul class="unstyled bordered skip-first">
+<div>
+    <h4>
+        Answers
+    </h4>
+    <hr />
+    
     @foreach (var item in Model.Answers)
     {
-        <li class="row">
-            <div class="span9">
-                @Html.Raw(item.Question.Body)
-            </div>
-            <div class="span3">
-                <div class="well well-small">@item.Value</div>
-                <div class="well well-small">@item.Comment</div>
-            </div>
-        </li>
+        <dl class="dl-horizontal">
+            <dt>
+                Question:
+            </dt>
+            <dd>
+                @item.Question.Title
+                
+            </dd>
+            <dt>
+                Answer:
+            </dt>
+            <dd>
+                @item.QuestionOption.Name
+            </dd>
+        </dl>
     }
-</ul>
+
+</div>
+
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>

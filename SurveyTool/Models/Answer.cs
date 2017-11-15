@@ -1,46 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Web;
 
 namespace SurveyTool.Models
 {
     public class Answer
     {
-        [Key]
-        public int Id { get; set; }
+        public Answer() {
+            AnswerId = -1;
+            QuestionId = -1;
+            QuestionOptionId = -1;
+            ModifiedDate = DateTime.Now;
+            EntryDate = DateTime.Now;
+        }
 
+        [Key]
+        [Column("AnswerId")]
+        public int AnswerId { get; set; }
         public int ResponseId { get; set; }
 
-        public Response Response { get; set; }
-
+        [ForeignKey("ResponseId")]
+        public virtual Response Response { get; set; }
         public int QuestionId { get; set; }
 
-        public string Value { get; set; }
+        [ForeignKey("QuestionId")]
+        public virtual Question Question { get; set; }
+        public int QuestionOptionId { get; set; }
 
-        public string Comment { get; set; }
+        [ForeignKey("QuestionOptionId")]
+        public virtual QuestionOption QuestionOption { get; set; }
 
-        public Question Question { get; set; }
+        [DataType(DataType.MultilineText)]
+        [StringLength(200)]
+        public string Remarks { get; set; }
 
-        public int Score
-        {
-           get
-           {
-               if (Question != null)
-               {
-                   if (Question.Type == "Yes/No")
-                       return Value == "Yes" ? 1 : 0;
+        [DisplayName("Last Modified on")]
+        public DateTime ModifiedDate { get; set; }
 
-                   if (Question.Type == "Number")
-                   {
-                       int num;
-                       Int32.TryParse(Value, out num);
-                       return num > 0 ? 1 : 0;
-                   }
-               }
+        [DisplayName("Created on")]
+        public DateTime EntryDate { get; set; }
 
-               return 0;
-           }
-        }
     }
 }

@@ -49,9 +49,8 @@ namespace SurveyTool.Models
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "Email")]
-        [EmailAddress]
-        public string Email { get; set; }
+        [Display(Name = "UserName")]
+        public string UserName { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
@@ -64,10 +63,20 @@ namespace SurveyTool.Models
 
     public class RegisterViewModel
     {
+
+        [Required]
+        [Display(Name = "UserRoles")]
+        public string UserRoles { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
+
+
+        [Required]
+        [Display(Name = "UserName")]
+        public string UserName { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]

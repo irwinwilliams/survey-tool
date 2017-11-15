@@ -1,0 +1,57 @@
+﻿@model IEnumerable<SurveyTool.Models.QuestionOption>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Question Options</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Question.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsEnabled)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ModifiedDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EntryDate)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Question.Title)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsEnabled)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ModifiedDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EntryDate)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.QuestionOptionId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.QuestionOptionId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.QuestionOptionId })
+        </td>
+    </tr>
+}
+
+</table>

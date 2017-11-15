@@ -1,57 +1,44 @@
 ﻿@model IEnumerable<SurveyTool.Models.Response>
 
 @{
-    ViewBag.Title = "Responses";
+    ViewBag.Title = "Index";
 }
 
-@section scripts
-{
-    @Scripts.Render("~/bundles/models")
+<h2>Responses</h2>
 
-    <script type="text/javascript">
-        $(function () {
-            ko.applyBindings(new ResponseListModel(), $('#response-list')[0]);
-        })
-    </script>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Survey.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreatedBy)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EntryDate)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            <a href="@Url.Action("Details", new { id = item.ResponseId })">
+                @Html.DisplayFor(modelItem => item.Survey.Name)
+            </a>
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreatedBy)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EntryDate)
+        </td>
+        <td>
+            @Html.ActionLink("Details", "Details", new { id=item.ResponseId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ResponseId })
+        </td>
+    </tr>
 }
 
-<div class="page-header">
-    <h2>Responses <small>Manage survey responses</small></h2>
-</div>
-
-<table id="response-list" class="table table-striped">
-    <thead>
-        <tr>
-            <th class="span1">Date</th>
-            <th class="span6">Survey</th>
-            <th class="span2">Team Member</th>
-            <th class="span2">Results</th>
-            <th class="span1">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td><span class="muted">@item.CreatedOn.ToString("d")</span></td>
-                <td>
-                    <a href="@Url.Action("Details", "Responses", new {surveyId = item.SurveyId, id = item.Id})">
-                        @item.Survey.Name
-                    </a>
-                </td>
-                <td>
-                    @item.CreatedBy
-                </td>
-                <td>
-                    @item.GetAnswerCount()/@item.GetQuestionCount() - 
-                    @item.CalculateScore().ToString("P1")
-                </td>
-                <td>
-                    @Html.ActionLink("Delete", "Delete",
-                                     new { Controller = "Responses", surveyId = item.SurveyId, id = item.Id },
-                                     new { @class = "text-error", data_bind = "click: destroy" })
-                </td>
-            </tr>
-        }
-    </tbody>
 </table>
