@@ -7,48 +7,68 @@
 @if (User.IsInRole("Admin"))
 {
 
-    <h2>Create</h2>
-    <ul>
-        <li>
-            <a href="@Url.Action("Create","Surveys")">Create a Survey</a>
-        </li>
-        <li>
-            <a href="@Url.Action("Create","Categories")">Create a Category</a>
+    <h2>Dashboard <small>Survey Tool</small></h2>
 
-        </li>
-        <li>
-            <a href="@Url.Action("Create","Questions")">Create a Question</a>
+    <hr />
+    <h6>
+        Create Items or see list
+    </h6>
+    <table class="table">
+        <tr>
+            <th>
+                Items
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <a href="@Url.Action("Create","Surveys")">Survey</a>
+            </td>
+            <td>
+                @Html.ActionLink("Create", "Create", "Surveys", routeValues: null, htmlAttributes: null) |
+                @Html.ActionLink("Show List", "Index", "Surveys", routeValues: null, htmlAttributes: null)
+            </td>
 
-        </li>
-        <li>
-            <a href="@Url.Action("Create","QuestionOptions")">Create a Question Options</a>
+        </tr>
+        <tr>
+            <td>
+                <a href="@Url.Action("Create","Categories")">Category</a>
+            </td>
+            <td>
+                @Html.ActionLink("Create", "Create", "Categories", routeValues: null, htmlAttributes: null) |
+                @Html.ActionLink("Show List", "Index", "Categories", routeValues: null, htmlAttributes: null)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="@Url.Action("Create","Questions")">Questions</a>
+            </td>
+            <td>
+                @Html.ActionLink("Create", "Create", "Questions", routeValues: null, htmlAttributes: null) |
+                @Html.ActionLink("Show List", "Index", "Questions", routeValues: null, htmlAttributes: null)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="@Url.Action("Create","Questions")">Question Options</a>
+            </td>
+            <td>
+                @Html.ActionLink("Create", "Create", "QuestionOptions", routeValues: null, htmlAttributes: null) |
+                @Html.ActionLink("Show List", "Index", "QuestionOptions", routeValues: null, htmlAttributes: null)
+            </td>
+        </tr>
+    </table>
 
-        </li>
-
-    </ul>
-
-    <h2>Show Lists</h2>
-    <ul>
-        <li>
-            <a href="@Url.Action("Index","Surveys")">Surveys</a>
-        </li>
-        <li>
-            <a href="@Url.Action("Index","Categories")">Categories</a>
-
-        </li>
-        <li>
-            <a href="@Url.Action("Index","Questions")">Questions</a>
-
-        </li>
-        <li>
-            <a href="@Url.Action("Index","QuestionOptions")">Question Options</a>
-        </li>
-    </ul>
 }
 else
 {
-    <h2>Take a survey</h2>
-
+    <h2>Take a survey <small>Survey Tool</small> </h2>
+    <hr />
+    <h6>
+        Select any desired survey from below list
+    </h6>
     <table class="table">
         <tr>
             <th>
@@ -72,7 +92,7 @@ else
         }
     </table>
 
-    
+
 
 }
 
