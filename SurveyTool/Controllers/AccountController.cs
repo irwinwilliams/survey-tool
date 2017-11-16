@@ -175,6 +175,9 @@ namespace SurveyTool.Controllers
                 AddErrors(result);
             }
 
+            ViewBag.Name = new SelectList(context.Roles.Where(u => !u.Name.Contains("Admin"))
+                                           .ToList(), "Name", "Name");
+
             // If we got this far, something failed, redisplay form
             return View(model);
         }
